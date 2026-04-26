@@ -36,7 +36,7 @@ Profiles are read from each browser's `profiles.ini`. A browser only appears in 
 
 ## Requirements
 
-- GNOME Shell 46–49
+- GNOME Shell 46–50
 - GTK4 ≥ 4.14 and libadwaita ≥ 1.6 (provided by most distros shipping GNOME 46+)
 - Rust toolchain (for building from source)
 

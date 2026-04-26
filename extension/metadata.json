@@ -3,5 +3,5 @@
   "description": "Launch Firefox and other Gecko-based browsers with a specific profile from the GNOME panel. Requires the ff-profiles binary to be installed.",
   "uuid": "ff-profiles@seblebs.de",
   "url": "https://github.com/ripmav/ff-profiles",
-  "shell-version": ["46", "47", "48", "49"]
+  "shell-version": ["46", "47", "48", "49", "50"]
 }
