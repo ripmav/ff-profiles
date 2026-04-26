@@ -1,6 +1,6 @@
 PREFIX          ?= $(HOME)/.local
 BINDIR           = $(PREFIX)/bin
-EXTENSION_UUID   = ff-profiles@ripmav.tech
+EXTENSION_UUID   = ff-profiles@seblebs.de
 EXTENSION_DIR    = $(HOME)/.local/share/gnome-shell/extensions/$(EXTENSION_UUID)
 DESKTOP_DIR      = $(HOME)/.local/share/applications
 
@@ -29,13 +29,13 @@ install-extension:
 	install -Dm644 extension/extension.js   $(EXTENSION_DIR)/extension.js
 
 install-desktop:
-	install -Dm644 data/tech.ripmav.ff-profiles.desktop \
-		$(DESKTOP_DIR)/tech.ripmav.ff-profiles.desktop
+	install -Dm644 data/de.seblebs.ff-profiles.desktop \
+		$(DESKTOP_DIR)/de.seblebs.ff-profiles.desktop
 
 uninstall:
 	rm -f  $(BINDIR)/ff-profiles
 	rm -rf $(EXTENSION_DIR)
-	rm -f  $(DESKTOP_DIR)/tech.ripmav.ff-profiles.desktop
+	rm -f  $(DESKTOP_DIR)/de.seblebs.ff-profiles.desktop
 
 clean:
 	cargo clean
