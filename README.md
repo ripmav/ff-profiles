@@ -1,24 +1,24 @@
 # Firefox Profiles
 
-Launch Firefox and other Gecko-based browsers with a specific profile directly from the GNOME panel.
+Launch Firefox and other Gecko-based browsers with a specific profile directly from the GNOME panel. Clicking the Firefox icon opens a profile picker **right below the indicator**, grouped by browser — select a profile to launch it.
 
 This is a Rust rewrite of the [baxyz/firefox-profiles](https://github.com/baxyz/firefox-profiles) GNOME Shell extension. The original was a pure TypeScript/GJS extension; this version replaces all logic and UI with a native GTK4 + libadwaita application while keeping a minimal JavaScript extension for the GNOME panel indicator.
 
 ## How it works
 
 ```
-GNOME panel indicator (extension.js)
-        │
-        │  spawns
-        ▼
-  ff-profiles binary  ──►  GTK4 window (libadwaita)
-                                    │
-                             select a profile
-                                    │
-                            firefox -P <profile> -no-remote
+GNOME panel  [ Firefox icon ]
+                   │
+                   │  spawns + positions below indicator
+                   ▼
+             ff-profiles binary  ──►  GTK4 window (libadwaita)
+                                               │
+                                        select a profile
+                                               │
+                                      firefox -P <profile> -no-remote
 ```
 
-Clicking the Firefox icon in the GNOME top bar opens a native window listing all detected profiles grouped by browser. Clicking a profile launches that browser with `-P <profile> -no-remote` and closes the window.
+Clicking the Firefox icon in the GNOME top bar opens a native window **right below the indicator**, listing all detected profiles grouped by browser. Clicking a profile launches that browser with `-P <profile> -no-remote` and closes the window. Clicking the icon again while the window is open re-focuses and repositions it.
 
 ## Supported browsers
 
@@ -103,7 +103,7 @@ ff-profiles/
 │   ├── digging.rs        # Reads profiles.ini, extracts profile names
 │   └── runner.rs         # Spawns browser with -P <profile> -no-remote
 ├── extension/
-│   ├── extension.js      # GNOME Shell panel indicator (JavaScript, required by GNOME)
+│   ├── extension.js      # GNOME Shell panel indicator; spawns binary and positions window below icon
 │   └── metadata.json     # Extension metadata (UUID, supported shell versions)
 ├── data/
 │   └── de.seblebs.ff-profiles.desktop
