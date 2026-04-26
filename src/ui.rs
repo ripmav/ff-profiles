@@ -16,7 +16,8 @@ pub fn build_ui(app: &adw::Application) {
 
     let scrolled = gtk4::ScrolledWindow::builder()
         .hscrollbar_policy(gtk4::PolicyType::Never)
-        .vexpand(true)
+        .propagate_natural_height(true)
+        .max_content_height(640)
         .build();
 
     let content = gtk4::Box::builder()
