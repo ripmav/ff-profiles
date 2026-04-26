@@ -6,7 +6,7 @@ mod ui;
 use adw::prelude::*;
 use libadwaita as adw;
 
-const APP_ID: &str = "tech.baxyz.ff-profiles";
+const APP_ID: &str = "tech.ripmav.ff-profiles";
 
 fn main() -> glib::ExitCode {
     let app = adw::Application::builder()
