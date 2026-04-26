@@ -47,10 +47,12 @@ class FfProfilesIndicator extends Button {
         const monitorIdx = global.display.get_monitor_at_point(bx, 0);
         const workArea = global.display.get_monitor_workarea(monitorIdx);
         const frame = metaWindow.get_frame_rect();
+        // frame.width is 0 before first commit; fall back to the Rust default_width
+        const windowWidth = frame.width > 0 ? frame.width : 360;
 
         // Center horizontally on the indicator, clamped to the monitor's work area
-        let targetX = Math.round(bx + this.width / 2 - frame.width / 2);
-        targetX = Math.max(workArea.x, Math.min(targetX, workArea.x + workArea.width - frame.width));
+        let targetX = Math.round(bx + this.width / 2 - windowWidth / 2);
+        targetX = Math.max(workArea.x, Math.min(targetX, workArea.x + workArea.width - windowWidth));
 
         metaWindow.move_frame(true, targetX, workArea.y);
     }
@@ -75,11 +77,10 @@ class FfProfilesIndicator extends Button {
         this._windowCreatedId = global.display.connect('window-created', (_d, metaWindow) => {
             if (!this._isOurWindow(metaWindow)) return;
             this._disconnectWindowCreated();
-            // Defer to let the window finish its initial layout before measuring its size
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                this._positionNearIndicator(metaWindow);
-                return GLib.SOURCE_REMOVE;
-            });
+            // Call synchronously before meta_window_show() runs. This sets user_has_move=true
+            // on the MetaWindow, which causes Mutter's placement algorithm to skip
+            // auto-centering and use our coordinates for the very first paint — no flicker.
+            this._positionNearIndicator(metaWindow);
         });
 
         // Clean up the listener even if the window never appears
