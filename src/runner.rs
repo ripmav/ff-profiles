@@ -9,7 +9,9 @@ use std::process::Command;
 /// original TypeScript extension, which could misparse profiles containing spaces).
 pub fn open_browser_profile(command: &str, profile: &str) -> Result<()> {
     let mut parts = command.split_whitespace();
-    let program = parts.next().ok_or_else(|| anyhow::anyhow!("command is empty"))?;
+    let program = parts
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("command is empty"))?;
     let prefix_args: Vec<&str> = parts.collect();
 
     let mut child = Command::new(program)
