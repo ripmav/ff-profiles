@@ -6,16 +6,16 @@ pub struct BrowserInfo {
     pub command: &'static str,
 }
 
-/// Returns the list of known browser profile config locations.
+/// Returns the list of known browser profile config locations, ordered most-specific first.
 ///
-/// Paths are checked in order — most specific (XDG) first, classic hidden-dir fallbacks after.
-/// Mirrors the CONFIG_PATHS constant from the original TypeScript extension.
+/// Uses GLib's path helpers so XDG_CONFIG_HOME and $HOME follow the same resolution as in
+/// the original GJS extension (GLib.get_home_dir / GLib.getenv("XDG_CONFIG_HOME")).
 pub fn config_paths() -> Vec<BrowserInfo> {
-    let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("~"));
-    let xdg_config = dirs::config_dir().unwrap_or_else(|| home.join(".config"));
+    let home = glib::home_dir();
+    let xdg_config = glib::user_config_dir();
 
     vec![
-        // Firefox (native)
+        // Firefox (native) — XDG path first (supported since Firefox 147)
         BrowserInfo {
             label: "Firefox",
             path: xdg_config.join("mozilla/firefox/profiles.ini"),

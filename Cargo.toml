@@ -2,18 +2,19 @@
 name = "ff-profiles"
 version = "0.1.0"
 edition = "2021"
-description = "Launch Firefox and other Gecko-based browsers with a specific profile from the command line"
+description = "Launch Firefox and other Gecko-based browsers with a specific profile"
 license = "AGPL-3.0-only"
-repository = "https://github.com/baxyz/firefox-profiles"
+repository = "https://github.com/ripmav/ff-profiles"
 
 [[bin]]
 name = "ff-profiles"
 path = "src/main.rs"
 
 [dependencies]
+gtk4 = "0.11"
+glib = "0.22"
+libadwaita = { version = "0.9", features = ["v1_6"] }
 anyhow = "1"
-dirs = "6"
-dialoguer = "0.12"
 
 [dev-dependencies]
 tempfile = "3"

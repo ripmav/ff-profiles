@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(git init *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(rustup show *)",
+      "Bash(rustc --version)",
+      "Bash(cargo --version)",
+      "Bash(cargo search *)",
+      "Bash(cargo build *)",
+      "Bash(cargo test *)",
+      "Bash(cargo clippy *)"
+    ]
+  }
+}

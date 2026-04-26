@@ -6,7 +6,7 @@ pub struct BrowserProfiles {
     pub profiles: Vec<String>,
 }
 
-/// Returns all browsers that have a profiles.ini file on disk, together with their profiles.
+/// Returns every browser that has a profiles.ini on disk, together with its profile names.
 pub fn get_firefox_profiles() -> Vec<BrowserProfiles> {
     config_paths()
         .into_iter()
@@ -19,7 +19,7 @@ pub fn get_firefox_profiles() -> Vec<BrowserProfiles> {
         .collect()
 }
 
-/// Parses a profiles.ini file and returns every `Name=` value found.
+/// Extracts every `Name=` value from a profiles.ini file.
 fn profiles_from_ini(path: &std::path::Path) -> Vec<String> {
     std::fs::read_to_string(path)
         .unwrap_or_default()
