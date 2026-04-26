@@ -65,11 +65,14 @@ class FfProfilesIndicator extends Button {
     }
 
     _launch() {
-        // If the window is already open, reposition it and bring it forward
+        // If the window is already open, reposition it and bring it forward — do not
+        // spawn a second binary; that would open a duplicate even if GTK single-instance
+        // catches it, because the D-Bus guard can silently fail under some environments.
         const existing = this._findOurWindow();
         if (existing) {
             this._positionNearIndicator(existing);
-            existing.activate(global.get_current_time());
+            Main.activateWindow(existing);
+            return;
         }
 
         // Watch for the window on first launch (window-created won't fire if already open)
