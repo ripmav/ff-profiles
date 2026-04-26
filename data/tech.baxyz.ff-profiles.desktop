@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Firefox Profiles
+Comment=Launch Firefox and Gecko-based browsers with a specific profile
+Exec=ff-profiles
+Icon=firefox-symbolic
+Type=Application
+Categories=Network;WebBrowser;
+Keywords=Firefox;Profile;Browser;
+NoDisplay=false
