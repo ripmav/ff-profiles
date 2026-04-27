@@ -11,10 +11,11 @@ const APP_TITLE = 'Firefox Profiles';
 
 const FfProfilesIndicator = GObject.registerClass(
 class FfProfilesIndicator extends Button {
-    _init(binary) {
+    _init(binary, defaultWidth) {
         super._init(0.0, 'Firefox Profiles', true);
 
         this._binary = binary;
+        this._defaultWidth = defaultWidth;
         this._windowCreatedId = 0;
         this._cleanupTimeoutId = 0;
 
@@ -49,8 +50,8 @@ class FfProfilesIndicator extends Button {
         const monitorIdx = global.display.get_monitor_at_point(bx, 0);
         const workArea = global.display.get_monitor_workarea(monitorIdx);
         const frame = metaWindow.get_frame_rect();
-        // frame.width is 0 before first commit; fall back to default_width in ui.rs (keep in sync)
-        const windowWidth = frame.width > 0 ? frame.width : 360;
+        // frame.width is 0 before first commit; fall back to the value from metadata.json
+        const windowWidth = frame.width > 0 ? frame.width : this._defaultWidth;
 
         // Center horizontally on the indicator, clamped to the monitor's work area
         let targetX = Math.round(bx + this.width / 2 - windowWidth / 2);
@@ -134,7 +135,8 @@ export default class FfProfilesExtension extends Extension {
             GLib.find_program_in_path('ff-profiles') ??
             `${GLib.get_home_dir()}/.local/bin/ff-profiles`;
 
-        this._indicator = new FfProfilesIndicator(binary);
+        const defaultWidth = this.metadata['window-width'] ?? 360;
+        this._indicator = new FfProfilesIndicator(binary, defaultWidth);
         Main.panel.addToStatusArea(this.uuid, this._indicator);
     }
 

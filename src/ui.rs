@@ -5,11 +5,14 @@ use libadwaita as adw;
 
 use crate::{digging, runner};
 
+// Generated from extension/metadata.json by build.rs — single source of truth for window width
+include!(concat!(env!("OUT_DIR"), "/constants.rs"));
+
 pub fn build_ui(app: &adw::Application) {
     let window = adw::ApplicationWindow::builder()
         .application(app)
         .title("Firefox Profiles")
-        .default_width(360) // keep in sync with the fallback in extension.js _positionNearIndicator
+        .default_width(DEFAULT_WINDOW_WIDTH)
         .build();
 
     let toast_overlay = adw::ToastOverlay::new();

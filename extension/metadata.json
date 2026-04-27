@@ -3,5 +3,6 @@
   "description": "A profile picker that opens right below the panel icon. Supports Firefox, LibreWolf, Floorp, Zen Browser, and more. Requires the ff-profiles binary.",
   "uuid": "ff-profiles@seblebs.de",
   "url": "https://github.com/ripmav/ff-profiles",
-  "shell-version": ["46", "47", "48", "49", "50"]
+  "shell-version": ["46", "47", "48", "49", "50"],
+  "window-width": 360
 }
