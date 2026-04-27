@@ -98,7 +98,8 @@ pub fn config_paths() -> Vec<BrowserInfo> {
             path: home.join(".icecat/profiles.ini"),
             command: "icecat",
         },
-        // Palemoon
+        // Palemoon — the vendor uses spaces in both the org dir and browser dir;
+        // PathBuf::join handles them correctly, but the spaces are not a typo.
         BrowserInfo {
             label: "Palemoon",
             path: home.join(".moonchild productions/pale moon/profiles.ini"),

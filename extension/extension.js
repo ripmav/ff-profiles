@@ -16,6 +16,7 @@ class FfProfilesIndicator extends Button {
 
         this._binary = binary;
         this._windowCreatedId = 0;
+        this._cleanupTimeoutId = 0;
 
         this.add_child(new St.Icon({
             icon_name: 'firefox-symbolic',
@@ -64,6 +65,13 @@ class FfProfilesIndicator extends Button {
         }
     }
 
+    _cancelCleanupTimeout() {
+        if (this._cleanupTimeoutId) {
+            GLib.source_remove(this._cleanupTimeoutId);
+            this._cleanupTimeoutId = 0;
+        }
+    }
+
     _launch() {
         // If the window is already open, reposition it and bring it forward — do not
         // spawn a second binary; that would open a duplicate even if GTK single-instance
@@ -75,19 +83,29 @@ class FfProfilesIndicator extends Button {
             return;
         }
 
-        // Watch for the window on first launch (window-created won't fire if already open)
+        // Fail fast with a helpful message when the binary is not installed
+        if (!Gio.File.new_for_path(this._binary).query_exists(null)) {
+            Main.notify('Firefox Profiles',
+                `Binary not found: ${this._binary}. Run "make install" to install ff-profiles.`);
+            return;
+        }
+
+        // Connect before spawning so no window-created event can slip through the gap
         this._disconnectWindowCreated();
         this._windowCreatedId = global.display.connect('window-created', (_d, metaWindow) => {
             if (!this._isOurWindow(metaWindow)) return;
             this._disconnectWindowCreated();
+            this._cancelCleanupTimeout();
             // Call synchronously before meta_window_show() runs. This sets user_has_move=true
             // on the MetaWindow, which causes Mutter's placement algorithm to skip
             // auto-centering and use our coordinates for the very first paint — no flicker.
             this._positionNearIndicator(metaWindow);
         });
 
-        // Clean up the listener even if the window never appears
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+        // Store the source ID so it can be cancelled if the extension is disabled mid-flight
+        this._cancelCleanupTimeout();
+        this._cleanupTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+            this._cleanupTimeoutId = 0;
             this._disconnectWindowCreated();
             return GLib.SOURCE_REMOVE;
         });
@@ -97,11 +115,13 @@ class FfProfilesIndicator extends Button {
         } catch (e) {
             Main.notify('Firefox Profiles', `Failed to launch ff-profiles: ${e.message}`);
             this._disconnectWindowCreated();
+            this._cancelCleanupTimeout();
         }
     }
 
     destroy() {
         this._disconnectWindowCreated();
+        this._cancelCleanupTimeout();
         super.destroy();
     }
 });

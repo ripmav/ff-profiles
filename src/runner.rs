@@ -14,16 +14,15 @@ pub fn open_browser_profile(command: &str, profile: &str) -> Result<()> {
         .ok_or_else(|| anyhow::anyhow!("command is empty"))?;
     let prefix_args: Vec<&str> = parts.collect();
 
-    let mut child = Command::new(program)
+    // Spawn and drop the Child immediately. On Unix the browser is reparented to init(1)
+    // when ff-profiles exits, which handles the final wait — no OS thread held open for
+    // the browser's lifetime (which can be hours).
+    Command::new(program)
         .args(&prefix_args)
         .args(["-P", profile, "-no-remote"])
         .spawn()
+        .map(drop)
         .with_context(|| format!("failed to execute '{command}'"))?;
-
-    // Detach so the browser outlives this process.
-    std::thread::spawn(move || {
-        let _ = child.wait();
-    });
 
     Ok(())
 }
