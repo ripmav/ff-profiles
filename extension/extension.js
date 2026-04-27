@@ -23,9 +23,10 @@ class FfProfilesIndicator extends Button {
             style_class: 'system-status-icon',
         }));
 
-        this.connect('button-press-event', () => {
+        this.connect('button-press-event', (_actor, event) => {
+            if (event.get_button() !== 1) return false;
             this._launch();
-            return false;
+            return true;
         });
     }
 
@@ -48,7 +49,7 @@ class FfProfilesIndicator extends Button {
         const monitorIdx = global.display.get_monitor_at_point(bx, 0);
         const workArea = global.display.get_monitor_workarea(monitorIdx);
         const frame = metaWindow.get_frame_rect();
-        // frame.width is 0 before first commit; fall back to the Rust default_width
+        // frame.width is 0 before first commit; fall back to default_width in ui.rs (keep in sync)
         const windowWidth = frame.width > 0 ? frame.width : 360;
 
         // Center horizontally on the indicator, clamped to the monitor's work area

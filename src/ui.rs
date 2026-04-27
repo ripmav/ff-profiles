@@ -9,7 +9,7 @@ pub fn build_ui(app: &adw::Application) {
     let window = adw::ApplicationWindow::builder()
         .application(app)
         .title("Firefox Profiles")
-        .default_width(360)
+        .default_width(360) // keep in sync with the fallback in extension.js _positionNearIndicator
         .build();
 
     let toast_overlay = adw::ToastOverlay::new();
@@ -44,7 +44,7 @@ pub fn build_ui(app: &adw::Application) {
 
     // Discover profiles off the main thread so slow/NFS home dirs don't freeze the shell panel
     glib::spawn_future_local(async move {
-        let browsers = gio::spawn_blocking(digging::get_firefox_profiles)
+        let browsers = gio::spawn_blocking(digging::discover_browser_profiles)
             .await
             .unwrap_or_else(|_| Vec::new());
         content.remove(&spinner);

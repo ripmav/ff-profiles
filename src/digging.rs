@@ -11,7 +11,7 @@ pub struct BrowserProfiles {
 /// Browsers with an empty or name-less profiles.ini are skipped.
 /// If the same file is reachable via two paths (e.g. XDG and classic are symlinked to the
 /// same inode), only the first entry for that (canonical-path, command) pair is kept.
-pub fn get_firefox_profiles() -> Vec<BrowserProfiles> {
+pub fn discover_browser_profiles() -> Vec<BrowserProfiles> {
     let mut seen: std::collections::HashSet<(std::path::PathBuf, &'static str)> =
         Default::default();
     let mut result = Vec::new();
