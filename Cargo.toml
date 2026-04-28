@@ -1,0 +1,20 @@
+[package]
+name = "ff-profiles"
+version = "0.1.0"
+edition = "2021"
+description = "GNOME panel profile picker for Firefox and Gecko-based browsers — opens right below the indicator"
+license = "AGPL-3.0-only"
+repository = "https://github.com/ripmav/ff-profiles"
+
+[[bin]]
+name = "ff-profiles"
+path = "src/main.rs"
+
+[dependencies]
+gtk4 = "0.11"
+glib = "0.22"
+libadwaita = { version = "0.9", features = ["v1_6"] }
+anyhow = "1"
+
+[dev-dependencies]
+tempfile = "3"

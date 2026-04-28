@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Firefox Profiles
+Comment=Pick a Firefox or Gecko-browser profile from a popup below the panel icon
+Exec=ff-profiles
+Icon=firefox-symbolic
+Type=Application
+Categories=Network;WebBrowser;
+Keywords=Firefox;Profile;Browser;
+NoDisplay=false
