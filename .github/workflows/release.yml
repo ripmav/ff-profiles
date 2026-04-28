@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  EXTENSION_UUID: ff-profiles@seblebs.de
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu 24.04 ships libadwaita 1.5; the project requires >=1.6.
+      # The gnome-team/gnome-nightly PPA provides up-to-date GNOME libraries.
+      - name: Add GNOME PPA for libadwaita >=1.6
+        run: |
+          sudo add-apt-repository -y ppa:gnome-team/gnome-nightly
+          sudo apt-get update -q
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libgtk-4-dev \
+            libadwaita-1-dev
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Run tests
+        run: cargo test
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=dev-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      # GNOME Extensions zip — files must sit at the root of the archive,
+      # not inside a subdirectory, for extensions.gnome.org to accept it.
+      - name: Package — GNOME Extensions zip
+        run: |
+          zip -j "${{ env.EXTENSION_UUID }}.zip" \
+            extension/extension.js \
+            extension/metadata.json
+
+      # Full installable tarball — extract and run `make install`.
+      - name: Package — installable tarball
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          STAGEDIR="ff-profiles-${VERSION}"
+          mkdir -p "$STAGEDIR"
+          cp target/release/ff-profiles "$STAGEDIR/"
+          cp -r extension "$STAGEDIR/"
+          cp -r data "$STAGEDIR/"
+          cp Makefile README.md "$STAGEDIR/"
+          tar -czf "ff-profiles-${VERSION}-x86_64-linux.tar.gz" "$STAGEDIR"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ steps.version.outputs.version }}
+          path: |
+            ${{ env.EXTENSION_UUID }}.zip
+            ff-profiles-*-x86_64-linux.tar.gz
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.EXTENSION_UUID }}.zip
+            ff-profiles-*-x86_64-linux.tar.gz
+          generate_release_notes: true
